@@ -35,7 +35,7 @@ public class EMF_Creator {
         
         boolean isDeployed = (System.getenv("DEPLOYED") != null);
         if (isDeployed) {
-            final String CONNECTION_STR = "CONNECTION_STARTCODE";
+            final String CONNECTION_STR = "CONNECTION_TEAMUP";
             /* Strategy for deployment */
             System.out.println("USING ENVIRONMENT VARIABLES");
             System.out.println("DEPLOYED       -->" + System.getenv("DEPLOYED"));
