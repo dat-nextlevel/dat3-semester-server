@@ -40,10 +40,10 @@ public class FacadeExampleTest {
     //TODO -- Make sure to change the code below to use YOUR OWN entity class
     @BeforeEach
     public void setUp() {
-        u1.setX("10");
-        u1.setY("10");
-        u2.setX("10");
-        u2.setY("10");
+        u1.setX("52");
+        u1.setY("12");
+        u2.setX("53");
+        u2.setY("13");
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -68,4 +68,9 @@ public class FacadeExampleTest {
         assertEquals(2, facade.getRenameMeCount(), "Expects two rows in the database");
     }
 
+
+    @Test
+    public void testCalculateDistance(){
+        assertEquals(130, Math.round(CoordinatesCalculator.calcDistance(u1,u2)));
+    }
 }

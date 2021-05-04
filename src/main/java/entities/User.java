@@ -94,4 +94,20 @@ public class User implements Serializable {
     public List<String> getRolesAsStrings() {
         return roles.isEmpty() ? null : roles.stream().map(Object::toString).collect(Collectors.toList());
     }
+
+    public String getX() {
+        return x;
+    }
+
+    public void setX(String x) {
+        this.x = x;
+    }
+
+    public String getY() {
+        return y;
+    }
+
+    public void setY(String y) {
+        this.y = y;
+    }
 }

@@ -4,9 +4,29 @@ import entities.User;
 
 public class CoordinatesCalculator {
 
-    public double calcDistance(User user1, User user2){
-        return Math.sqrt(Math.pow((Double.parseDouble(user2.getX())- Double.parseDouble(user1.getX())), 2)
-                + (Math.pow((Double.parseDouble(user2.getY())-Double.parseDouble(user1.getY())), 2)));
+    public static double calcDistance(User u1, User u2) {
+        double theta = Double.parseDouble(u1.getY()) - Double.parseDouble(u2.getY());
+        double dist = Math.sin(deg2rad(Double.parseDouble(u1.getX()))) * Math.sin(deg2rad(Double.parseDouble(u2.getX()))) +
+                Math.cos(deg2rad(Double.parseDouble(u1.getX()))) * Math.cos(deg2rad(Double.parseDouble(u2.getX()))) * Math.cos(deg2rad(theta));
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60 * 1.1515 * 1.609344;
+
+        return (dist);
+    }
+
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    /*::  This function converts decimal degrees to radians             :*/
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    private static double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
+
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    /*::  This function converts radians to decimal degrees             :*/
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    private static double rad2deg(double rad) {
+        return (rad * 180.0 / Math.PI);
     }
 
 }
