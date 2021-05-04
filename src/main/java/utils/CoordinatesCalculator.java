@@ -4,7 +4,7 @@ import entities.User;
 
 public class CoordinatesCalculator {
 
-    public static double calcDistance(User u1, User u2) {
+    public static long calcDistance(User u1, User u2) {
         double theta = Double.parseDouble(u1.getY()) - Double.parseDouble(u2.getY());
         double dist = Math.sin(deg2rad(Double.parseDouble(u1.getX()))) * Math.sin(deg2rad(Double.parseDouble(u2.getX()))) +
                 Math.cos(deg2rad(Double.parseDouble(u1.getX()))) * Math.cos(deg2rad(Double.parseDouble(u2.getX()))) * Math.cos(deg2rad(theta));
@@ -12,7 +12,7 @@ public class CoordinatesCalculator {
         dist = rad2deg(dist);
         dist = dist * 60 * 1.1515 * 1.609344;
 
-        return (dist);
+        return (Math.round(dist));
     }
 
     /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
@@ -27,6 +27,11 @@ public class CoordinatesCalculator {
     /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
     private static double rad2deg(double rad) {
         return (rad * 180.0 / Math.PI);
+    }
+
+    public static boolean calcDistanceWithRadius(User u1, User u2, double radius){
+        double distance = calcDistance(u1, u2);
+        return radius >= distance;
     }
 
 }

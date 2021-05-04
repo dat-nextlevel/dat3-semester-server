@@ -8,10 +8,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 //Uncomment the line below, to temporarily disable this test
 //@Disabled
@@ -72,5 +74,15 @@ public class FacadeExampleTest {
     @Test
     public void testCalculateDistance(){
         assertEquals(130, Math.round(CoordinatesCalculator.calcDistance(u1,u2)));
+    }
+
+    @Test
+    public void testCalculateDistanceWithRadiusTrue(){
+        assertTrue(CoordinatesCalculator.calcDistanceWithRadius(u1, u2, 135));
+    }
+
+    @Test
+    public void testCalculateDistanceWithRadiusFalse(){
+        assertFalse(CoordinatesCalculator.calcDistanceWithRadius(u1, u2, 100));
     }
 }
