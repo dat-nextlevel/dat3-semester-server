@@ -32,12 +32,17 @@ public class User implements Serializable {
             inverseJoinColumns = { @JoinColumn(name = "fk_role") })
     private Set<Role> roles = new HashSet<>();
 
+    @ManyToMany(cascade = CascadeType.PERSIST)
+    List<Hobby> hobbies;
+
+
     public User() {
     }
 
     public User(String username, String password) {
         this.username = username;
         this.password = generateHashedPassword(password);
+        this.hobbies = new ArrayList<>();
         x = null;
         y = null;
     }
@@ -88,21 +93,5 @@ public class User implements Serializable {
 
     public List<String> getRolesAsStrings() {
         return roles.isEmpty() ? null : roles.stream().map(Object::toString).collect(Collectors.toList());
-    }
-
-    public void setX(String x) {
-        this.x = x;
-    }
-
-    public void setY(String y) {
-        this.y = y;
-    }
-
-    public String getX() {
-        return x;
-    }
-
-    public String getY() {
-        return y;
     }
 }
