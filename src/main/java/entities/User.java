@@ -22,8 +22,9 @@ public class User implements Serializable {
 
     @Column(unique = true)
     private String username;
-
     private String password;
+    private String x;
+    private String y;
 
     @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "user_roles",
@@ -37,6 +38,8 @@ public class User implements Serializable {
     public User(String username, String password) {
         this.username = username;
         this.password = generateHashedPassword(password);
+        x = null;
+        y = null;
     }
 
     private String generateHashedPassword(String password) {
@@ -85,5 +88,21 @@ public class User implements Serializable {
 
     public List<String> getRolesAsStrings() {
         return roles.isEmpty() ? null : roles.stream().map(Object::toString).collect(Collectors.toList());
+    }
+
+    public void setX(String x) {
+        this.x = x;
+    }
+
+    public void setY(String y) {
+        this.y = y;
+    }
+
+    public String getX() {
+        return x;
+    }
+
+    public String getY() {
+        return y;
     }
 }

@@ -1,5 +1,7 @@
 package facades;
 
+import entities.User;
+import utils.CoordinatesCalculator;
 import utils.EMF_Creator;
 import entities.RenameMe;
 import javax.persistence.EntityManager;
@@ -15,9 +17,11 @@ import org.junit.jupiter.api.Test;
 //@Disabled
 public class FacadeExampleTest {
 
+    User u1 = new User("test1", "test_123");
+    User u2 = new User("test2", "test_123");
+
     private static EntityManagerFactory emf;
     private static FacadeExample facade;
-
     public FacadeExampleTest() {
     }
 
@@ -36,6 +40,10 @@ public class FacadeExampleTest {
     //TODO -- Make sure to change the code below to use YOUR OWN entity class
     @BeforeEach
     public void setUp() {
+        u1.setX("10");
+        u1.setY("10");
+        u2.setX("10");
+        u2.setY("10");
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
