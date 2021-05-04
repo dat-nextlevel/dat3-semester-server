@@ -25,18 +25,24 @@ public class User implements Serializable {
 
     private String password;
 
+    
     @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "user_roles",
             joinColumns = { @JoinColumn(name = "fk_user_id") },
             inverseJoinColumns = { @JoinColumn(name = "fk_role") })
     private Set<Role> roles = new HashSet<>();
 
+    @ManyToMany(cascade = CascadeType.PERSIST)
+    List<Hobby> hobbies;
+    
+    
     public User() {
     }
 
     public User(String username, String password) {
         this.username = username;
         this.password = generateHashedPassword(password);
+        this.hobbies = new ArrayList<>();
     }
 
     private String generateHashedPassword(String password) {
