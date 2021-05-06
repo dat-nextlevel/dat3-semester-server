@@ -14,6 +14,10 @@ public class ExternalFetchFacade {
 
     Gson GSON = new Gson();
 
+    public DawaDTO getDawaData(String data) {
+        return GSON.fromJson(data, DawaDTO.class);
+    }
+
     public ChuckNorrisJokeDTO getChuckNorrisJoke(String data) {
         return GSON.fromJson(data, ChuckNorrisJokeDTO.class);
     }

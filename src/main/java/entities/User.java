@@ -25,6 +25,7 @@ public class User implements Serializable {
     private String password;
     private String x;
     private String y;
+    private String addressId;
 
     @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "user_roles",
@@ -43,8 +44,6 @@ public class User implements Serializable {
         this.username = username;
         this.password = generateHashedPassword(password);
         this.hobbies = new ArrayList<>();
-        x = null;
-        y = null;
     }
 
     private String generateHashedPassword(String password) {
