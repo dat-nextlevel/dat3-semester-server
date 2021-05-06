@@ -109,4 +109,12 @@ public class User implements Serializable {
     public void setY(String y) {
         this.y = y;
     }
+
+    public String getAddressId() {
+        return addressId;
+    }
+
+    public void setAddressId(String addressId) {
+        this.addressId = addressId;
+    }
 }
