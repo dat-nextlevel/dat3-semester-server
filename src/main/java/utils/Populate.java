@@ -2,6 +2,9 @@ package utils;
 
 
 import com.google.common.base.Strings;
+import dtos.HobbyDTO;
+import entities.Hobby;
+import facades.HobbyFacade;
 import facades.UserFacade;
 
 import javax.persistence.EntityManager;
@@ -25,6 +28,8 @@ public class Populate {
 
     public List<String> populateAll() {
         List<String> populated = new ArrayList<>();
+        if(populateHobbies())
+            populated.add("hobbies");
         if(populateUsers())
             populated.add("users");
 
@@ -58,6 +63,28 @@ public class Populate {
         userFacade.create("user", password_user, new ArrayList<>());
         userFacade.create("admin", password_admin, Collections.singletonList("admin"));
 
+        return true;
+    }
+
+    private boolean populateHobbies() {
+        HobbyFacade hobbyFacade = HobbyFacade.getInstance(this.emf);
+
+        if (!hobbyFacade.getHobbies().isEmpty()) return false;
+
+        List<HobbyDTO> hobbies = Arrays.asList(
+                new HobbyDTO("CS:GO", "Gaming"),
+                new HobbyDTO("Valorant", "Gaming"),
+                new HobbyDTO("Football", "Sport"),
+                new HobbyDTO("Tennis", "Sport"),
+                new HobbyDTO("Volleyball", "Sport"),
+                new HobbyDTO("Streaming", "Entertainment"),
+                new HobbyDTO("Coding", "Technology"),
+                new HobbyDTO("Risk", "Board Game"),
+                new HobbyDTO("Dungeon And Dragons", "Board Game"),
+                new HobbyDTO("Anime", "Entertainment")
+        );
+
+        hobbyFacade.create(hobbies);
         return true;
     }
 

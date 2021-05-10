@@ -6,6 +6,7 @@ import io.restassured.parsing.Parser;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.hamcrest.collection.IsArrayContaining;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,8 +20,7 @@ import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 
 public class UtilityResourceTest {
 
@@ -66,6 +66,7 @@ public class UtilityResourceTest {
             //Delete existing database data.
             em.createQuery("delete from User").executeUpdate();
             em.createQuery("delete from Role").executeUpdate();
+            em.createQuery("delete from Hobby").executeUpdate();
 
             em.getTransaction().commit();
 
@@ -77,11 +78,12 @@ public class UtilityResourceTest {
     @Test
     public void didPopulate() {
         given()
-                .contentType("application/json")
-                .when()
-                .get("/util/populate").then()
-                .statusCode(200)
-                .body("populated", contains("users"));
+            .contentType("application/json")
+            .when()
+            .get("/util/populate").then()
+            .statusCode(200)
+            .body("populated", hasItem("users"))
+            .body("populated", hasItem("hobbies"));
     }
 
 
