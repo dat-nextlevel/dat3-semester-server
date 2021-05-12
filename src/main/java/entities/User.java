@@ -26,6 +26,7 @@ public class User implements Serializable {
     private String x;
     private String y;
     private String addressId;
+    private long radius;
 
     @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "user_roles",
@@ -120,5 +121,13 @@ public class User implements Serializable {
 
     public void setAddressId(String addressId) {
         this.addressId = addressId;
+    }
+
+    public long getRadius() {
+        return radius;
+    }
+
+    public void setRadius(long radius) {
+        this.radius = radius;
     }
 }

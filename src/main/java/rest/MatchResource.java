@@ -11,14 +11,17 @@ import facades.FacadeExample;
 import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import java.util.List;
 
 //Todo Remove or change relevant parts before ACTUAL use
 @Path("match")
 public class MatchResource {
-
+    @Context
+    SecurityContext securityContext;
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
        
     private static final HobbyFacade HOBBY_FACADE =  HobbyFacade.getInstance(EMF);
@@ -29,8 +32,8 @@ public class MatchResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/matches")
     @RolesAllowed("user")
-    public String getMatches(@PathParam("hobby") String hobby){
-
+    public String getMatches(){
+        securityContext.getUserPrincipal().getName();
         return "jhe";
     }
 }

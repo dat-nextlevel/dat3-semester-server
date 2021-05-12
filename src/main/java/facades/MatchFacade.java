@@ -1,8 +1,20 @@
 package facades;
 
+import dtos.MatchDTO;
+import dtos.MeDTO;
+import entities.Hobby;
+import entities.User;
+import utils.CoordinatesCalculator;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
+import javax.ws.rs.WebApplicationException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MatchFacade {
 
@@ -31,5 +43,40 @@ public class MatchFacade {
         return emf.createEntityManager();
     }
 
+    public List<MatchDTO> getMatches(String username) {
+        /**
+         * Get User VIA Username
+         * Get User hobbies
+         * Get User location and defined radius
+         * Match User with other users of with same hobbies
+         * See if other Users are within radius
+         * Return list of users that matched.
+         *
+         */
 
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<User> q = em.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class);
+            q.setParameter("username", username);
+            User user = q.getSingleResult();
+
+            TypedQuery<User> q2 = em.createQuery("SELECT u FROM User u", User.class);
+            List<User> users = q2.getResultList();
+            List<User> matchedUsers = new ArrayList<>(users);
+
+            for (User u : users) {
+                if (Collections.disjoint(user.getHobbies(), u.getHobbies())) {
+                    matchedUsers.remove(u);
+                }
+                if (!CoordinatesCalculator.calcDistanceWithRadius(user, u, user.getRadius())) {
+                    matchedUsers.remove(u);
+                }
+            }
+
+            return matchedUsers.stream().map(_user -> new MatchDTO(_user, CoordinatesCalculator.calcDistance(user, _user))).collect(Collectors.toList());
+
+        } catch (NoResultException e) {
+            throw new WebApplicationException("No user found with username" + username, 404);
+        }
+    }
 }
