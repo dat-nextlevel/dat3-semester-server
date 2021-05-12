@@ -1,7 +1,5 @@
 package facades;
 
-import entities.User;
-import utils.CoordinatesCalculator;
 import utils.EMF_Creator;
 import entities.RenameMe;
 import javax.persistence.EntityManager;
@@ -18,9 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
 //Uncomment the line below, to temporarily disable this test
 //@Disabled
 public class FacadeExampleTest {
-
-    User u1 = new User("test1", "test_123");
-    User u2 = new User("test2", "test_123");
 
     private static EntityManagerFactory emf;
     private static FacadeExample facade;
@@ -42,10 +37,6 @@ public class FacadeExampleTest {
     //TODO -- Make sure to change the code below to use YOUR OWN entity class
     @BeforeEach
     public void setUp() {
-        u1.setX("52");
-        u1.setY("12");
-        u2.setX("53");
-        u2.setY("13");
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -70,19 +61,4 @@ public class FacadeExampleTest {
         assertEquals(2, facade.getRenameMeCount(), "Expects two rows in the database");
     }
 
-
-    @Test
-    public void testCalculateDistance(){
-        assertEquals(130, Math.round(CoordinatesCalculator.calcDistance(u1,u2)));
-    }
-
-    @Test
-    public void testCalculateDistanceWithRadiusTrue(){
-        assertTrue(CoordinatesCalculator.calcDistanceWithRadius(u1, u2, 135));
-    }
-
-    @Test
-    public void testCalculateDistanceWithRadiusFalse(){
-        assertFalse(CoordinatesCalculator.calcDistanceWithRadius(u1, u2, 100));
-    }
 }
