@@ -1,12 +1,14 @@
 package facades;
 
 import com.google.common.base.Strings;
+import dtos.MeDTO;
 import dtos.UserDTO;
 import entities.Role;
 import entities.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.WebApplicationException;
 
@@ -103,6 +105,20 @@ public class UserFacade {
         try {
             TypedQuery<User> q = em.createQuery("SELECT u FROM User u", User.class);
             return q.getResultList().stream().map(UserDTO::new).collect(Collectors.toList());
+        } finally {
+            em.close();
+        }
+    }
+
+    public MeDTO getMe(String username) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<User> q = em.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class);
+            q.setParameter("username", username);
+            return new MeDTO(q.getSingleResult());
+        }
+        catch(NoResultException e) {
+            throw new WebApplicationException("No user found with username" + username, 404);
         } finally {
             em.close();
         }

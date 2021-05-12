@@ -106,6 +106,10 @@ public class User implements Serializable {
         return y;
     }
 
+    public List<Hobby> getHobbies() {
+        return hobbies;
+    }
+
     public void setY(String y) {
         this.y = y;
     }
