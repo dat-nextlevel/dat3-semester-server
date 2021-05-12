@@ -9,7 +9,7 @@ public class MatchFacade {
     private static EntityManagerFactory emf;
     private static MatchFacade instance;
 
-    private MatchFacade(){
+    private MatchFacade() {
 
     }
 
@@ -19,7 +19,7 @@ public class MatchFacade {
      * @return the instance of this facade.
      */
 
-    public static MatchFacade getMatchFacade(EntityManagerFactory _emf){
+    public static MatchFacade getMatchFacade(EntityManagerFactory _emf) {
         if (instance == null) {
             emf = _emf;
             instance = new MatchFacade();
@@ -27,5 +27,9 @@ public class MatchFacade {
         return instance;
     }
 
-    public EntityManager getEntityManager () {return emf.createEntityManager();}
+    public EntityManager getEntityManager() {
+        return emf.createEntityManager();
+    }
+
+
 }
