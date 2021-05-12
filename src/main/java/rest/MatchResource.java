@@ -18,7 +18,7 @@ import javax.ws.rs.core.SecurityContext;
 import java.util.List;
 
 //Todo Remove or change relevant parts before ACTUAL use
-@Path("match")
+@Path("matches")
 public class MatchResource {
     @Context
     SecurityContext securityContext;
@@ -30,7 +30,6 @@ public class MatchResource {
             
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/matches")
     @RolesAllowed("user")
     public String getMatches(){
         securityContext.getUserPrincipal().getName();

@@ -44,15 +44,6 @@ public class MatchFacade {
     }
 
     public List<MatchDTO> getMatches(String username) {
-        /**
-         * Get User VIA Username
-         * Get User hobbies
-         * Get User location and defined radius
-         * Match User with other users of with same hobbies
-         * See if other Users are within radius
-         * Return list of users that matched.
-         *
-         */
 
         EntityManager em = emf.createEntityManager();
         try {
