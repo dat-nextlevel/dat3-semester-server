@@ -3,20 +3,18 @@ package facades;
 import com.google.common.base.Strings;
 import dtos.MeDTO;
 import dtos.UserDTO;
+import entities.Hobby;
 import entities.Role;
 import entities.User;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import javax.ws.rs.WebApplicationException;
 
-import org.apache.commons.lang3.EnumUtils;
 import security.errorhandling.AuthenticationException;
+import utils.CoordinatesCalculator;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -89,7 +87,6 @@ public class UserFacade {
 
                 user.addRole(role);
             });
-
             em.getTransaction().begin();
             em.persist(user);
             em.getTransaction().commit();
@@ -118,9 +115,79 @@ public class UserFacade {
             return new MeDTO(q.getSingleResult());
         }
         catch(NoResultException e) {
-            throw new WebApplicationException("No user found with username" + username, 404);
+            throw new WebApplicationException("No user found with username " + username, 404);
         } finally {
             em.close();
         }
+    }
+
+    private User getUser(String username) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<User> q = em.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class);
+            q.setParameter("username", username);
+            return q.getSingleResult();
+        }
+        catch(NoResultException e) {
+            throw new WebApplicationException("No user found with username " + username, 404);
+        } finally {
+            em.close();
+        }
+    }
+
+    public void attachHobby(String username, String name) {
+        EntityManager em = emf.createEntityManager();
+        User user = getUser(username);
+        try {
+            Hobby query = em.find(Hobby.class, name);
+            if (query != null) {
+                em.getTransaction().begin();
+                user.addHobby(query);
+                em.merge(user);
+                em.getTransaction().commit();
+            }
+        } finally {
+            em.close();
+        }
+    }
+
+    public void setCoordinates(String username, String latitude, String longitude) {
+        EntityManager em = emf.createEntityManager();
+        User user = getUser(username);
+        try {
+            em.getTransaction().begin();
+            user.setLatitude(latitude);
+            user.setLongitude(longitude);
+            em.merge(user);
+            em.getTransaction().commit();
+        }
+        finally {
+            em.close();
+        }
+    }
+
+    public List<UserDTO> getUsersByHobby(String hobby) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<User> q = em.createQuery("SELECT distinct u FROM User u JOIN u.hobbies hobbies WHERE hobbies.name = :hobby", User.class);
+            q.setParameter("hobby", hobby);
+            return q.getResultList().stream().map(UserDTO::new).collect(Collectors.toList());
+        }
+        finally {
+            em.close();
+        }
+    }
+
+    public List<UserDTO> getUsersWithinDistance(String username, List<UserDTO> users, int distance) {
+        User me = getUser(username);
+        List<UserDTO> retUsers = new ArrayList<>();
+        users.removeIf(user -> user.getUsername().equals(me.getUsername()));
+        for (UserDTO u : users) {
+            User user = getUser(u.getUsername());
+            if (CoordinatesCalculator.calcDistanceWithRadius(me, user, distance)) {
+                retUsers.add(new UserDTO(user));
+            }
+        }
+        return retUsers;
     }
 }

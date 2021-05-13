@@ -23,10 +23,10 @@ public class User implements Serializable {
     @Column(unique = true)
     private String username;
     private String password;
-    private String x;
-    private String y;
+    private String latitude;
+    private String longitude;
     private String addressId;
-    private long radius;
+    private int radius;
 
     @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "user_roles",
@@ -35,6 +35,9 @@ public class User implements Serializable {
     private Set<Role> roles = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.PERSIST)
+    @JoinTable(name = "user_hobbies",
+            joinColumns = { @JoinColumn(name = "user_id") },
+            inverseJoinColumns = { @JoinColumn(name = "hobby_name") })
     List<Hobby> hobbies;
 
 
@@ -95,39 +98,44 @@ public class User implements Serializable {
         return roles.isEmpty() ? null : roles.stream().map(Object::toString).collect(Collectors.toList());
     }
 
-    public String getX() {
-        return x;
+    public String getLatitude() {
+        return latitude;
     }
 
-    public void setX(String x) {
-        this.x = x;
+    public void setLatitude(String x) {
+        this.latitude = x;
     }
 
-    public String getY() {
-        return y;
+    public String getLongitude() {
+        return longitude;
+    }
+
+
+    public void setLongitude(String y) {
+        this.longitude = y;
     }
 
     public List<Hobby> getHobbies() {
         return hobbies;
     }
 
-    public void setY(String y) {
-        this.y = y;
+    public void addHobby(Hobby hobby){
+        hobbies.add(hobby);
     }
 
     public String getAddressId() {
         return addressId;
     }
 
-    public void setAddressId(String addressId) {
-        this.addressId = addressId;
-    }
-
-    public long getRadius() {
+    public int getRadius() {
         return radius;
     }
 
-    public void setRadius(long radius) {
+    public void setRadius(int radius) {
         this.radius = radius;
+    }
+
+    public void setAddressId(String addressId) {
+        this.addressId = addressId;
     }
 }

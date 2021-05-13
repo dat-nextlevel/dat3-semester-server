@@ -15,10 +15,13 @@ public class Hobby implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String category;
-
     @Id
     private String name;
+
+    private String category;
+
+    @ManyToMany(mappedBy = "hobbies")
+    private List<User> users;
 
     public String getCategory() {
         return category;
@@ -35,10 +38,6 @@ public class Hobby implements Serializable {
     public void setUsers(List<User> users) {
         this.users = users;
     }
-    
-    @ManyToMany
-    private List<User> users;
-    
 
     public String getName() {
         return name;
@@ -56,5 +55,4 @@ public class Hobby implements Serializable {
 
     public Hobby() {
     }
-    
 }

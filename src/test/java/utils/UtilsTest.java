@@ -34,10 +34,10 @@ public class UtilsTest {
     //TODO -- Make sure to change the code below to use YOUR OWN entity class
     @BeforeEach
     public void setUp() {
-        u1.setX("52");
-        u1.setY("12");
-        u2.setX("53");
-        u2.setY("13");
+        u1.setLatitude("52");
+        u1.setLongitude("12");
+        u2.setLatitude("53");
+        u2.setLongitude("13");
     }
 
     @AfterEach
