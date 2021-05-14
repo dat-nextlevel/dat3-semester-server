@@ -12,9 +12,13 @@ import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.WebApplicationException;
 
+import errorhandling.ValidationException;
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.mindrot.jbcrypt.BCrypt;
 import security.errorhandling.AuthenticationException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -100,18 +104,42 @@ public class UserFacade {
         }
     }
 
-    /**
-     * TODO: Make a Register method in the end uses the create method
-     * Password confirmation
-     *
-     *
-     */
+    public void register (String username, String password, String verifyPassword){
+        List<String> errors = new ArrayList<>();
+
+        //Username Validation
+        if (StringUtils.isAllBlank() || getUser(username) == null){
+            errors.add("Username is blank or is taken");
+        }
+
+        if (!password.equals(verifyPassword)){
+            errors.add("Passwords to not match");
+        }
+
+        if (!errors.isEmpty()){
+            throw new ValidationException("These fields have issues", errors);
+        } else {
+            List<String> roles = new ArrayList<>();
+            create(username, password, roles);
+        }
+    }
 
     public List<UserDTO> getUsers() {
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<User> q = em.createQuery("SELECT u FROM User u", User.class);
             return q.getResultList().stream().map(UserDTO::new).collect(Collectors.toList());
+        } finally {
+            em.close();
+        }
+    }
+
+    public MeDTO getUser(String username) {
+        EntityManager em = emf.createEntityManager();
+        try{
+            TypedQuery<User> q = em.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class);
+            q.setParameter("username", username);
+            return new MeDTO(q.getSingleResult());
         } finally {
             em.close();
         }
