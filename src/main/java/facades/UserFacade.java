@@ -111,6 +111,7 @@ public class UserFacade {
             errors.add("Username is blank or is taken");
         }
 
+        //Password validation
         if (!password.equals(verifyPassword)){
             errors.add("Passwords to not match");
         }
@@ -128,17 +129,6 @@ public class UserFacade {
         try {
             TypedQuery<User> q = em.createQuery("SELECT u FROM User u", User.class);
             return q.getResultList().stream().map(UserDTO::new).collect(Collectors.toList());
-        } finally {
-            em.close();
-        }
-    }
-
-    public MeDTO getUser(String username) {
-        EntityManager em = emf.createEntityManager();
-        try{
-            TypedQuery<User> q = em.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class);
-            q.setParameter("username", username);
-            return new MeDTO(q.getSingleResult());
         } finally {
             em.close();
         }
