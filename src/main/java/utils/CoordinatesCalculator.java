@@ -5,9 +5,9 @@ import entities.User;
 public class CoordinatesCalculator {
 
     public static long calcDistance(User u1, User u2) {
-        double theta = Double.parseDouble(u1.getY()) - Double.parseDouble(u2.getY());
-        double dist = Math.sin(deg2rad(Double.parseDouble(u1.getX()))) * Math.sin(deg2rad(Double.parseDouble(u2.getX()))) +
-                Math.cos(deg2rad(Double.parseDouble(u1.getX()))) * Math.cos(deg2rad(Double.parseDouble(u2.getX()))) * Math.cos(deg2rad(theta));
+        double theta = Double.parseDouble(u1.getLongitude()) - Double.parseDouble(u2.getLongitude());
+        double dist = Math.sin(deg2rad(Double.parseDouble(u1.getLatitude()))) * Math.sin(deg2rad(Double.parseDouble(u2.getLatitude()))) +
+                Math.cos(deg2rad(Double.parseDouble(u1.getLatitude()))) * Math.cos(deg2rad(Double.parseDouble(u2.getLatitude()))) * Math.cos(deg2rad(theta));
         dist = Math.acos(dist);
         dist = rad2deg(dist);
         dist = dist * 60 * 1.1515 * 1.609344;
@@ -33,5 +33,4 @@ public class CoordinatesCalculator {
         double distance = calcDistance(u1, u2);
         return radius >= distance;
     }
-
 }
