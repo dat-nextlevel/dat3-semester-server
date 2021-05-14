@@ -97,6 +97,13 @@ public class UserFacade {
         }
     }
 
+    /**
+     * TODO: Make a Register method in the end uses the create method
+     * Password confirmation
+     *
+     *
+     */
+
     public List<UserDTO> getUsers() {
         EntityManager em = emf.createEntityManager();
         try {
