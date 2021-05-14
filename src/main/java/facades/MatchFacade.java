@@ -1,8 +1,6 @@
 package facades;
 
 import dtos.MatchDTO;
-import dtos.MeDTO;
-import entities.Hobby;
 import entities.User;
 import utils.CoordinatesCalculator;
 
