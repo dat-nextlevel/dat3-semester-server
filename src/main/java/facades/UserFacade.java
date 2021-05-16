@@ -1,6 +1,9 @@
 package facades;
 
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import dtos.DawaDTO;
 import dtos.MeDTO;
 import dtos.UserDTO;
 import entities.Hobby;
@@ -10,11 +13,15 @@ import entities.User;
 import javax.persistence.*;
 import javax.ws.rs.WebApplicationException;
 
+import errorhandling.ValidationException;
+import org.apache.commons.lang3.StringUtils;
 import security.errorhandling.AuthenticationException;
 import utils.CoordinatesCalculator;
+import utils.HttpUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 
@@ -22,6 +29,8 @@ public class UserFacade {
 
     private static EntityManagerFactory emf;
     private static UserFacade instance;
+    private final String DAWA_URL = "https://api.dataforsyningen.dk";
+    private final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     private UserFacade() {
     }
@@ -87,6 +96,7 @@ public class UserFacade {
 
                 user.addRole(role);
             });
+
             em.getTransaction().begin();
             em.persist(user);
             em.getTransaction().commit();
@@ -97,12 +107,26 @@ public class UserFacade {
         }
     }
 
-    /**
-     * TODO: Make a Register method in the end uses the create method
-     * Password confirmation
-     *
-     *
-     */
+    public void register (String username, String password, String verifyPassword){
+        List<String> errors = new ArrayList<>();
+
+        //Username Validation
+        if (StringUtils.isAllBlank() || getUser(username) == null){
+            errors.add("Username is blank or is taken");
+        }
+
+        //Password validation
+        if (!password.equals(verifyPassword)){
+            errors.add("Passwords to not match");
+        }
+
+        if (!errors.isEmpty()){
+            throw new ValidationException("These fields have issues", errors);
+        } else {
+            List<String> roles = new ArrayList<>();
+            create(username, password, roles);
+        }
+    }
 
     public List<UserDTO> getUsers() {
         EntityManager em = emf.createEntityManager();
@@ -210,5 +234,28 @@ public class UserFacade {
             }
         }
         return retUsers;
+    }
+
+    public DawaDTO getDawaInfo(double x, double y){
+        String path = "/adgangsadresser/reverse";
+        String query = "?x=" + x + "&y=" + y;
+        String url = DAWA_URL + path + query;
+
+        ExecutorService executor = Executors.newCachedThreadPool();
+
+        Callable<String> getDataFromApi = () -> HttpUtils.fetchData(url);
+        Future<String> future = executor.submit(getDataFromApi);
+
+        DawaDTO dawaDTO;
+
+        try{
+            dawaDTO = GSON.fromJson(future.get(), DawaDTO.class);
+        } catch (InterruptedException | ExecutionException e) {
+          e.printStackTrace();
+          throw new WebApplicationException("Error when connecting to external API", 500);
+        }
+
+        executor.shutdown();
+        return dawaDTO;
     }
 }
