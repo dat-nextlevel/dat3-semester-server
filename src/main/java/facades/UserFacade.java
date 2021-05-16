@@ -1,6 +1,7 @@
 package facades;
 
 import com.google.common.base.Strings;
+import dtos.DawaDTO;
 import dtos.MeDTO;
 import dtos.UserDTO;
 import entities.Hobby;
@@ -11,15 +12,12 @@ import javax.persistence.*;
 import javax.ws.rs.WebApplicationException;
 
 import errorhandling.ValidationException;
-import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.mindrot.jbcrypt.BCrypt;
 import security.errorhandling.AuthenticationException;
 import utils.CoordinatesCalculator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -216,5 +214,10 @@ public class UserFacade {
             }
         }
         return retUsers;
+    }
+
+    public DawaDTO getDawaInfo(){
+
+        return null;
     }
 }
