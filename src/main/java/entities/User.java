@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.*;
+import lombok.ToString;
 
 import org.mindrot.jbcrypt.BCrypt;
 
+@ToString
 @Entity
 @Table(name = "users")
 public class User implements Serializable {

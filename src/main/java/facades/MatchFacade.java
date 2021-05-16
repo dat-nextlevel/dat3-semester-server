@@ -49,7 +49,8 @@ public class MatchFacade {
             q.setParameter("username", username);
             User user = q.getSingleResult();
 
-            TypedQuery<User> q2 = em.createQuery("SELECT u FROM User u", User.class);
+            TypedQuery<User> q2 = em.createQuery("SELECT u FROM User u WHERE u.username != :username", User.class);
+            q2.setParameter("username", username);
             List<User> users = q2.getResultList();
             List<User> matchedUsers = new ArrayList<>(users);
 

@@ -62,6 +62,22 @@ public class Populate {
 
         userFacade.create("user", password_user, new ArrayList<>());
         userFacade.create("admin", password_admin, Collections.singletonList("admin"));
+        
+        userFacade.setCoordinates("user", "55.701929822699285", "12.532702091549336");
+        userFacade.setCoordinates("admin", "55.703651686963845", "12.529579781180544");
+        
+        userFacade.setRadius("user", 5);
+        userFacade.setRadius("admin", 5);
+        
+        userFacade.attachHobby("user", "Anime");
+        userFacade.attachHobby("user", "Risk");
+        userFacade.attachHobby("user", "Streaming");
+        userFacade.attachHobby("admin", "Anime");
+        userFacade.attachHobby("admin", "Risk");
+        userFacade.attachHobby("admin", "Coding");
+
+        
+        
 
         return true;
     }

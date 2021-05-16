@@ -172,6 +172,20 @@ public class UserFacade {
             em.close();
         }
     }
+    
+    public void setRadius(String username, int radius) {
+        EntityManager em = emf.createEntityManager();
+        User user = getUser(username);
+        try {
+            em.getTransaction().begin();
+            user.setRadius(radius);
+            em.merge(user);
+            em.getTransaction().commit();
+        }
+        finally {
+            em.close();
+        }
+    }
 
     public List<UserDTO> getUsersByHobby(String hobby) {
         EntityManager em = emf.createEntityManager();
