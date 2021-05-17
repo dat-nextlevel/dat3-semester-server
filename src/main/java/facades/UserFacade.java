@@ -4,8 +4,8 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dtos.DawaDTO;
-import dtos.MeDTO;
-import dtos.UserDTO;
+import dtos.user.PrivateUserDTO;
+import dtos.user.UserDTO;
 import entities.Hobby;
 import entities.Role;
 import entities.User;
@@ -107,11 +107,11 @@ public class UserFacade {
         }
     }
 
-    public void register (String username, String password, String verifyPassword){
+    public User register (String username, String password, String verifyPassword){
         List<String> errors = new ArrayList<>();
 
         //Username Validation
-        if (StringUtils.isAllBlank() || getUser(username) == null){
+        if (StringUtils.isAllBlank(username) || getUser(username) != null){
             errors.add("Username is blank or is taken");
         }
 
@@ -124,7 +124,7 @@ public class UserFacade {
             throw new ValidationException("These fields have issues", errors);
         } else {
             List<String> roles = new ArrayList<>();
-            create(username, password, roles);
+            return create(username, password, roles);
         }
     }
 
@@ -138,17 +138,15 @@ public class UserFacade {
         }
     }
 
-    public MeDTO getMe(String username) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            TypedQuery<User> q = em.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class);
-            q.setParameter("username", username);
-            return new MeDTO(q.getSingleResult());
-        }
-        catch(NoResultException e) {
-            throw new WebApplicationException("No user found with username " + username, 404);
-        } finally {
-            em.close();
+    public PrivateUserDTO getPrivateUser(String username) {
+        User me = getUser(username);
+        if(me == null) throw new WebApplicationException("No user found with username " + username, 404);
+
+        if(me.getAddressId() == null)
+            return new PrivateUserDTO(me);
+        else {
+            DawaDTO dawa = getDawaByAddressId(me.getAddressId());
+            return new PrivateUserDTO(me, dawa);
         }
     }
 
@@ -160,8 +158,48 @@ public class UserFacade {
             return q.getSingleResult();
         }
         catch(NoResultException e) {
-            throw new WebApplicationException("No user found with username " + username, 404);
+            return null;
         } finally {
+            em.close();
+        }
+    }
+
+    public PrivateUserDTO updateUser(PrivateUserDTO updatedUser) {
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            // Replace all accessible entries for our user.
+            User user = getUser(updatedUser.getUsername());
+            if (user == null)
+                throw new WebApplicationException("No user found with username " + updatedUser.getUsername(), 404);
+
+            // Only replace posted fields (check if null first).
+
+            if(updatedUser.getHobbies() != null) {
+                user.removeAllHobbies();
+                List<Hobby> hobbies = updatedUser.getHobbies().stream().map((hobby) -> em.find(Hobby.class, hobby.getName())).collect(Collectors.toList());
+                user.setHobbies(hobbies);
+            }
+
+            if (updatedUser.getAddressId() != null) {
+                user.setAddressId(updatedUser.getAddressId());
+
+                // If this was updated we need to set latitude and longitude again.
+                DawaDTO dawa = getDawaByAddressId(updatedUser.getAddressId());
+                user.setLongitude(String.valueOf(dawa.getX()));
+                user.setLatitude(String.valueOf(dawa.getY()));
+            }
+
+            if (updatedUser.getRadius() != 0)
+                user.setRadius(updatedUser.getRadius());
+
+            em.getTransaction().begin();
+            em.merge(user);
+            em.getTransaction().commit();
+
+            return getPrivateUser(user.getUsername());
+        }
+        finally {
             em.close();
         }
     }
@@ -236,23 +274,42 @@ public class UserFacade {
         return retUsers;
     }
 
-    public DawaDTO getDawaInfo(double x, double y){
+    public DawaDTO getDawaByCoordinates(double x, double y){
         String path = "/adgangsadresser/reverse";
         String query = "?x=" + x + "&y=" + y;
         String url = DAWA_URL + path + query;
 
+        return getDawaInformation(url);
+    }
+
+    public DawaDTO getDawaByAddressId(String id){
+        String path = "/adresser/" + id;
+        String url = DAWA_URL + path;
+
+        return getDawaInformation(url);
+    }
+
+    private DawaDTO getDawaInformation(String apiQueryUrl) {
+        // Modify to minified response.
+        apiQueryUrl = apiQueryUrl + (apiQueryUrl.contains("?") ? "&struktur=mini" : "?struktur=mini");
+
+
         ExecutorService executor = Executors.newCachedThreadPool();
 
-        Callable<String> getDataFromApi = () -> HttpUtils.fetchData(url);
+        // Required...
+        String finalApiQueryUrl = apiQueryUrl;
+
+        Callable<String> getDataFromApi = () -> HttpUtils.fetchData(finalApiQueryUrl);
         Future<String> future = executor.submit(getDataFromApi);
 
         DawaDTO dawaDTO;
 
         try{
-            dawaDTO = GSON.fromJson(future.get(), DawaDTO.class);
+            String json = future.get();
+            dawaDTO = GSON.fromJson(json, DawaDTO.class);
         } catch (InterruptedException | ExecutionException e) {
-          e.printStackTrace();
-          throw new WebApplicationException("Error when connecting to external API", 500);
+            e.printStackTrace();
+            throw new WebApplicationException("Error when connecting to external API", 500);
         }
 
         executor.shutdown();

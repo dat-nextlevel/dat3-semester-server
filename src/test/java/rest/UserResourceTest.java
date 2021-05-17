@@ -1,29 +1,32 @@
 package rest;
 
-import entities.User;
-import entities.Role;
-
+import com.google.gson.Gson;
+import dtos.HobbyDTO;
+import dtos.user.PrivateUserDTO;
 import io.restassured.RestAssured;
-import static io.restassured.RestAssured.given;
 import io.restassured.http.ContentType;
 import io.restassured.parsing.Parser;
-import java.net.URI;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.ws.rs.core.UriBuilder;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
-import static org.hamcrest.Matchers.equalTo;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import utils.EMF_Creator;
 import utils.Populate;
 
-public class LoginEndpointTest {
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.ws.rs.core.UriBuilder;
+import java.net.URI;
+import java.util.Arrays;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
+
+public class UserResourceTest {
 
     private static final int SERVER_PORT = 7777;
     private static final String SERVER_URL = "http://localhost/api";
@@ -31,7 +34,7 @@ public class LoginEndpointTest {
     static final URI BASE_URI = UriBuilder.fromUri(SERVER_URL).port(SERVER_PORT).build();
     private static HttpServer httpServer;
     private static EntityManagerFactory emf;
-    
+
     static HttpServer startServer() {
         ResourceConfig rc = ResourceConfig.forApplication(new ApplicationConfig());
         return GrizzlyHttpServerFactory.createHttpServer(BASE_URI, rc);
@@ -54,7 +57,7 @@ public class LoginEndpointTest {
     public static void closeTestServer() {
         //Don't forget this, if you called its counterpart in @BeforeAll
         EMF_Creator.endREST_TestWithDB();
-        
+
         httpServer.shutdownNow();
     }
 
@@ -65,12 +68,13 @@ public class LoginEndpointTest {
         try {
             em.getTransaction().begin();
             //Delete existing users and roles to get a "fresh" database
+            em.createQuery("delete from Hobby").executeUpdate();
             em.createQuery("delete from User").executeUpdate();
             em.createQuery("delete from Role").executeUpdate();
             //System.out.println("Saved test data to database");
             em.getTransaction().commit();
 
-            new Populate(EMF_Creator.createEntityManagerFactoryForTest()).populateUsers();
+            new Populate(EMF_Creator.createEntityManagerFactoryForTest()).populateAll();
         } finally {
             em.close();
         }
@@ -80,13 +84,13 @@ public class LoginEndpointTest {
     private static String securityToken;
 
     //Utility method to login and set the returned securityToken
-    private static void login(String role, String password) {
-        String json = String.format("{username: \"%s\", password: \"%s\"}", role, password);
+    private static void login(String username, String password) {
+        String json = String.format("{username: \"%s\", password: \"%s\"}", username, password);
         securityToken = given()
                 .contentType("application/json")
                 .body(json)
                 //.when().post("/api/login")
-                .when().post("/login")
+                .when().post("authentication/login")
                 .then()
                 .extract().path("token");
         //System.out.println("TOKEN ---> " + securityToken);
@@ -96,104 +100,50 @@ public class LoginEndpointTest {
         securityToken = null;
     }
 
+    // This test takes the assumption of a update user request.
     @Test
-    public void serverIsRunning() {
-        given().when().get("/info").then().statusCode(200);
-    }
+    public void updateUser() {
+        PrivateUserDTO userPrivate = PrivateUserDTO.builder()
+                .username("user")
+                .addressId("d5325435-2cfa-44bb-86f3-be79a481e552")
+                .hobbies(Arrays.asList(
+                        new HobbyDTO("Anime", ""),
+                        new HobbyDTO("Risk", ""),
+                        new HobbyDTO("CS:GO", "") // This was changed from (Streaming)
+                ))
+                .radius(5)
+                .build();
 
-    @Test
-    public void testRestNoAuthenticationRequired() {
-        given()
-                .contentType("application/json")
-                .when()
-                .get("/info/").then()
-                .statusCode(200)
-                .body("msg", equalTo("Hello anonymous"));
-    }
-
-    @Test
-    public void testRestForAdmin() {
-        login("admin", "test");
-        given()
-                .contentType("application/json")
-                .accept(ContentType.JSON)
-                .header("x-access-token", securityToken)
-                .when()
-                .get("/info/admin").then()
-                .statusCode(200)
-                .body("msg", equalTo("Hello to (admin) User: admin"));
-    }
-
-    @Test
-    public void testRestForUser() {
         login("user", "test");
+
+        // See who I am (from me resource).
         given()
                 .contentType("application/json")
                 .header("x-access-token", securityToken)
                 .when()
-                .get("/info/user").then()
+                .get("/me").then()
                 .statusCode(200)
-                .body("msg", equalTo("Hello to User: user"));
-    }
+                .body("hobbies", hasItem(hasEntry("name", "Streaming")));
 
-    @Test
-    public void testAutorizedUserCannotAccesAdminPage() {
-        login("user", "test");
+        // Update me.
         given()
                 .contentType("application/json")
                 .header("x-access-token", securityToken)
                 .when()
-                .get("/info/admin").then() //Call Admin endpoint as user
-                .statusCode(401);
-    }
-
-    @Test
-    public void testRestForMultiRole1() {
-        login("admin", "test");
-        given()
-                .contentType("application/json")
-                .accept(ContentType.JSON)
-                .header("x-access-token", securityToken)
-                .when()
-                .get("/info/admin").then()
+                .body(new Gson().toJson(userPrivate))
+                .put("/user").then()
                 .statusCode(200)
-                .body("msg", equalTo("Hello to (admin) User: admin"));
-    }
+                .body("hobbies", hasItem(hasEntry("name", "CS:GO")));
 
-    @Test
-    public void testRestForMultiRole2() {
-        login("admin", "test");
+        // See who I am again (from me resource).
         given()
                 .contentType("application/json")
                 .header("x-access-token", securityToken)
                 .when()
-                .get("/info/user").then()
+                .get("/me").then()
                 .statusCode(200)
-                .body("msg", equalTo("Hello to User: admin"));
-    }
+                .body("hobbies", hasItem(hasEntry("name", "CS:GO")));
 
-    @Test
-    public void userNotAuthenticated() {
-        logOut();
-        given()
-                .contentType("application/json")
-                .when()
-                .get("/info/user").then()
-                .statusCode(403)
-                .body("code", equalTo(403))
-                .body("message", equalTo("Not authenticated - do login"));
-    }
-
-    @Test
-    public void adminNotAuthenticated() {
-        logOut();
-        given()
-                .contentType("application/json")
-                .when()
-                .get("/info/user").then()
-                .statusCode(403)
-                .body("code", equalTo(403))
-                .body("message", equalTo("Not authenticated - do login"));
     }
 
 }

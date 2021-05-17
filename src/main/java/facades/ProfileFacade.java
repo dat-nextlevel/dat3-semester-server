@@ -1,14 +1,11 @@
 package facades;
 
-import dtos.MeDTO;
 import dtos.ProfileDTO;
-import entities.RenameMe;
 import entities.User;
-import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
-import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.WebApplicationException;
 

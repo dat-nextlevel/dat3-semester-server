@@ -1,9 +1,14 @@
 package dtos;
 
+import lombok.Data;
+import lombok.ToString;
+
+@Data
+@ToString
 public class DawaDTO {
     private String id;
     private int status;
-    private int darstatus;
+    private String etage;
     private String vejkode;
     private String vejnavn;
     private String adresseringsvejnavn;

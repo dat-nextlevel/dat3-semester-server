@@ -2,12 +2,9 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dtos.MatchDTO;
-import entities.Hobby;
-import facades.HobbyFacade;
+import dtos.user.MatchDTO;
 import facades.MatchFacade;
 import utils.EMF_Creator;
-import facades.FacadeExample;
 
 import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManagerFactory;

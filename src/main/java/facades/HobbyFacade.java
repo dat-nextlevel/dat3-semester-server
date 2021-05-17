@@ -1,9 +1,7 @@
 package facades;
 
 import dtos.HobbyDTO;
-import dtos.UserDTO;
 import entities.Hobby;
-import entities.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;

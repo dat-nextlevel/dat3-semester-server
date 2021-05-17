@@ -1,8 +1,8 @@
 package facades;
 
 import dtos.HobbyDTO;
-import dtos.MeDTO;
-import dtos.UserDTO;
+import dtos.user.PrivateUserDTO;
+import dtos.user.UserDTO;
 import org.junit.jupiter.api.*;
 import utils.EMF_Creator;
 
@@ -113,7 +113,7 @@ class UserFacadeTest {
     @Test
     void getUsersWithinDistance() {
         List<UserDTO> users = userFacade.getUsersByHobby("Anime");
-        MeDTO meDTO = userFacade.getMe("test1");
+        PrivateUserDTO meDTO = userFacade.getPrivateUser("test1");
         assertEquals("test2", userFacade.getUsersWithinDistance(meDTO.getUsername(), users, 5).get(0).getUsername());
     }
 }

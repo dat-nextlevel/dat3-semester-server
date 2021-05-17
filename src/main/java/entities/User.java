@@ -1,10 +1,7 @@
 package entities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.persistence.*;
 import lombok.ToString;
@@ -139,5 +136,18 @@ public class User implements Serializable {
 
     public void setAddressId(String addressId) {
         this.addressId = addressId;
+    }
+
+    public void setHobbies(List<Hobby> hobbies) {
+        this.hobbies = hobbies;
+    }
+
+    public void removeAllHobbies() {
+        //this.hobbies.forEach(this::removeHobby);
+        // Avoiding concurrent exception...
+        for (Iterator<Hobby> iterator = this.getHobbies().iterator(); iterator.hasNext();) {
+            Hobby hobby = iterator.next();
+            iterator.remove();
+        }
     }
 }

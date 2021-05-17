@@ -1,5 +1,7 @@
 package rest;
 
+import security.AuthenticationEndpoint;
+
 import java.util.Set;
 import javax.ws.rs.core.Application;
 
@@ -28,10 +30,11 @@ public class ApplicationConfig extends Application {
         resources.add(rest.ExternalFetchResource.class);
         resources.add(rest.MatchResource.class);
         resources.add(rest.MeResource.class);
+        resources.add(rest.UserResource.class);
         resources.add(rest.ProfileResource.class);
         resources.add(rest.UtilResource.class);
         resources.add(security.JWTAuthenticationFilter.class);
-        resources.add(security.LoginEndpoint.class);
+        resources.add(AuthenticationEndpoint.class);
         resources.add(security.RolesAllowedFilter.class);
         resources.add(security.errorhandling.AuthenticationExceptionMapper.class);
         resources.add(security.errorhandling.NotAuthorizedExceptionMapper.class);

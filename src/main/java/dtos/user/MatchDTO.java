@@ -1,6 +1,7 @@
-package dtos;
+package dtos.user;
 
 
+import dtos.HobbyDTO;
 import entities.User;
 import lombok.Data;
 

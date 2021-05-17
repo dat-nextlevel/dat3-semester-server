@@ -84,7 +84,7 @@ public class MeResourceTest {
                 .contentType("application/json")
                 .body(json)
                 //.when().post("/api/login")
-                .when().post("/login")
+                .when().post("authentication/login")
                 .then()
                 .extract().path("token");
         //System.out.println("TOKEN ---> " + securityToken);

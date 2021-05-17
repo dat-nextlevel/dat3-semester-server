@@ -17,10 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import entities.User;
 import errorhandling.API_Exception;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import security.errorhandling.AuthenticationException;
@@ -28,16 +26,17 @@ import errorhandling.GenericExceptionMapper;
 import javax.persistence.EntityManagerFactory;
 import utils.EMF_Creator;
 
-@Path("login")
-public class LoginEndpoint {
+@Path("authentication")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public class AuthenticationEndpoint {
 
     public static final int TOKEN_EXPIRE_TIME = 1000 * 60 * 30; //30 min
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
     public static final UserFacade USER_FACADE = UserFacade.getUserFacade(EMF);
 
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Path("login")
     public Response login(String jsonString) throws AuthenticationException, API_Exception {
         String username;
         String password;
@@ -65,6 +64,45 @@ public class LoginEndpoint {
         }
         throw new AuthenticationException("Invalid username or password! Please try again");
     }
+
+    @POST
+    @Path("register")
+    public Response register(String body) throws API_Exception {
+        String username;
+        String password;
+        String password_confirm;
+
+        try {
+            JsonObject json = JsonParser.parseString(body).getAsJsonObject();
+            username = json.get("username").getAsString();
+            password = json.get("password").getAsString();
+            password_confirm = json.get("password_confirm").getAsString();
+        } catch(Exception e) {
+            throw new API_Exception("Malformed JSON Suplied",400,e);
+        }
+
+        try {
+            User user = USER_FACADE.register(username, password, password_confirm);
+            String token = createToken(username, user.getRolesAsStrings());
+            JsonObject responseJson = new JsonObject();
+            responseJson.addProperty("username", username);
+            responseJson.addProperty("token", token);
+            return Response.ok(new Gson().toJson(responseJson)).build();
+
+        } catch (JOSEException ex) {
+            Logger.getLogger(GenericExceptionMapper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        throw new WebApplicationException("Unable to register, Internal Server error",500);
+
+    }
+
+
+    /**
+     *
+     * Token management
+     *
+     * */
 
     private String createToken(String userName, List<String> roles) throws JOSEException {
 

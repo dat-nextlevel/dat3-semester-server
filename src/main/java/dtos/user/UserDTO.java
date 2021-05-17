@@ -1,4 +1,4 @@
-package dtos;
+package dtos.user;
 
 import entities.Role;
 import entities.User;

@@ -3,6 +3,7 @@ package utils;
 
 import com.google.common.base.Strings;
 import dtos.HobbyDTO;
+import dtos.user.PrivateUserDTO;
 import entities.Hobby;
 import facades.HobbyFacade;
 import facades.UserFacade;
@@ -62,22 +63,32 @@ public class Populate {
 
         userFacade.create("user", password_user, new ArrayList<>());
         userFacade.create("admin", password_admin, Collections.singletonList("admin"));
-        
-        userFacade.setCoordinates("user", "55.701929822699285", "12.532702091549336");
-        userFacade.setCoordinates("admin", "55.703651686963845", "12.529579781180544");
-        
-        userFacade.setRadius("user", 5);
-        userFacade.setRadius("admin", 5);
-        
-        userFacade.attachHobby("user", "Anime");
-        userFacade.attachHobby("user", "Risk");
-        userFacade.attachHobby("user", "Streaming");
-        userFacade.attachHobby("admin", "Anime");
-        userFacade.attachHobby("admin", "Risk");
-        userFacade.attachHobby("admin", "Coding");
 
-        
-        
+        // Populate user data.
+        PrivateUserDTO userPrivate = PrivateUserDTO.builder()
+                .username("user")
+                .addressId("d5325435-2cfa-44bb-86f3-be79a481e552")
+                .hobbies(Arrays.asList(
+                        new HobbyDTO("Anime", ""),
+                        new HobbyDTO("Risk", ""),
+                        new HobbyDTO("Streaming", "")
+                ))
+                .radius(5)
+                .build();
+
+        PrivateUserDTO adminPrivate = PrivateUserDTO.builder()
+                .username("admin")
+                .addressId("fe4d6362-a0d6-4015-af9b-eaef05307705")
+                .hobbies(Arrays.asList(
+                        new HobbyDTO("Anime", ""),
+                        new HobbyDTO("Risk", ""),
+                        new HobbyDTO("Coding", "")
+                ))
+                .radius(5)
+                .build();
+
+        userFacade.updateUser(userPrivate);
+        userFacade.updateUser(adminPrivate);
 
         return true;
     }

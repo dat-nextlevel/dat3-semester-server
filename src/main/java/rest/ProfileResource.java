@@ -2,10 +2,8 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dtos.MeDTO;
 import dtos.ProfileDTO;
 import utils.EMF_Creator;
-import facades.FacadeExample;
 import facades.ProfileFacade;
 import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManagerFactory;
