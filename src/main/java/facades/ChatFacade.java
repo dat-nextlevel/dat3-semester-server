@@ -18,6 +18,7 @@ public class ChatFacade {
 
     private static EntityManagerFactory emf;
     private static ChatFacade instance;
+    private static final UserFacade USER_FACADE = UserFacade.getUserFacade(emf);
 
     private ChatFacade() {
 
@@ -54,6 +55,31 @@ public class ChatFacade {
     }
 
     public ChatDTO getChat(String usernameMe, String usernameOther) {
+        return new ChatDTO(_getChat(usernameMe, usernameOther));
+    }
+
+    public MessageDTO addMessage(String usernameMe, String usernameOther, String content) {
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            Chat chat = _getChat(usernameMe, usernameOther);
+
+            User author = USER_FACADE.getUser(usernameMe);
+            if (author == null) {
+                throw new WebApplicationException("The signed in user was not found", 500);
+            }
+            Message message = new Message(author, content);
+            chat.addMessage(message);
+            em.getTransaction().begin();
+            em.merge(chat);
+            em.getTransaction().commit();
+            return new MessageDTO(message);
+        } finally {
+            em.close();
+        }
+    }
+
+    private Chat _getChat(String usernameMe, String usernameOther) {
         EntityManager em = emf.createEntityManager();
 
         try {
@@ -63,18 +89,18 @@ public class ChatFacade {
             q.setParameter("usernameMe", usernameMe);
             q.setParameter("usernameOther", usernameOther);
 
-            return new ChatDTO(q.getSingleResult());
+            return q.getSingleResult();
         } catch (NoResultException e) {
-            try {
-                TypedQuery<User> q = em.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class);
-                q.setParameter("username", usernameMe);
-                TypedQuery<User> q2 = em.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class);
-                q.setParameter("username", usernameOther);
-                Chat chat = new Chat(q.getSingleResult(), q2.getSingleResult());
-                return new ChatDTO(chat);
-            } catch (NoResultException e) {
-                throw new WebApplicationException("One of the users do not exist", 500);
+            User u1 = USER_FACADE.getUser(usernameMe);
+            User u2 = USER_FACADE.getUser(usernameOther);
+            if (u1 == null || u2 == null) {
+                throw new WebApplicationException("One of the users do not exist", 403);
             }
+            Chat chat = new Chat(u1, u2);
+            em.getTransaction().begin();
+            em.persist(chat);
+            em.getTransaction().commit();
+            return chat;
         } finally {
             em.close();
         }

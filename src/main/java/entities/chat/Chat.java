@@ -16,7 +16,7 @@ public class Chat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @ElementCollection
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Message> messages = new ArrayList<>();
 
     @OneToOne

@@ -150,7 +150,7 @@ public class UserFacade {
         }
     }
 
-    private User getUser(String username) {
+    public User getUser(String username) {
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<User> q = em.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class);
