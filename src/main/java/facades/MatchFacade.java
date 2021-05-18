@@ -55,10 +55,13 @@ public class MatchFacade {
             List<User> matchedUsers = new ArrayList<>(users);
 
             for (User u : users) {
-                if (Collections.disjoint(user.getHobbies(), u.getHobbies())) {
+                if (u.getHobbies() == null || u.getHobbies().isEmpty() || u.getLatitude() == null || u.getLongitude() == null) {
                     matchedUsers.remove(u);
                 }
-                if (!CoordinatesCalculator.calcDistanceWithRadius(user, u, user.getRadius())) {
+                else if (Collections.disjoint(user.getHobbies(), u.getHobbies())) {
+                    matchedUsers.remove(u);
+                }
+                else if (!CoordinatesCalculator.calcDistanceWithRadius(user, u, user.getRadius())) {
                     matchedUsers.remove(u);
                 }
             }

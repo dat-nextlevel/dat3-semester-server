@@ -31,7 +31,11 @@ public class UserResource {
     @PUT
     @RolesAllowed("user")
     public Response updateUser(String json) {
-        PrivateUserDTO updatedUser = USER_FACADE.updateUser(GSON.fromJson(json, PrivateUserDTO.class));
+        PrivateUserDTO updatedUser = GSON.fromJson(json, PrivateUserDTO.class);
+        // Ensure that we only update our signed in user.
+        updatedUser.setUsername(securityContext.getUserPrincipal().getName());
+
+        updatedUser = USER_FACADE.updateUser(updatedUser);
         return Response.ok(GSON.toJson(updatedUser)).build();
     }
 }

@@ -76,7 +76,7 @@ class UserFacadeTest {
 
             userFacade.setCoordinates("test1", "55.701929822699285", "12.532702091549336");
             userFacade.setCoordinates("test2", "55.703651686963845", "12.529579781180544");
-            userFacade.setCoordinates("test3", "56.034870551215235", "12.595789041181456");
+            userFacade.setCoordinates("test3", "56.034870551225235", "12.595789041181456");
         } finally {
             em.close();
         }
