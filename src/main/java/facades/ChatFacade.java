@@ -1,12 +1,16 @@
 package facades;
 
+import dtos.chat.ChatDTO;
 import dtos.chat.MessageDTO;
 import entities.User;
+import entities.chat.Chat;
+import entities.chat.Message;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ChatFacade {
 
@@ -34,18 +38,16 @@ public class ChatFacade {
         return emf.createEntityManager();
     }
 
-    public List<MessageDTO> getChats(String username){
+    public List<ChatDTO> getChats(String username){
         EntityManager em = emf.createEntityManager();
 
         try{
-            TypedQuery<User> q = em.createQuery("SELECT u from User u WHERE u.username = :username", User.class);
+            TypedQuery<Chat> q = em.createQuery("SELECT c from Chat c WHERE c.user1.username = :username OR c.user2.username = :username", Chat.class);
             q.setParameter("username", username);
-            User user = q.getSingleResult();
+            return q.getResultList().stream().map(ChatDTO::new).collect(Collectors.toList());
 
-            List<MessageDTO> chats = null;
         } finally {
             em.close();
         }
-        return null;
     }
 }

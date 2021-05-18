@@ -1,21 +1,22 @@
 package dtos.chat;
 
-import entities.User;
+import dtos.user.ProfileDTO;
+import entities.chat.Message;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Date;
 
 @Data
 @AllArgsConstructor
 public class MessageDTO {
-    private Map<User, String> messages = new HashMap<>();
-    private User user1;
-    private User user2;
+    private ProfileDTO author;
+    private Date createdAt;
+    private String content;
 
-    public MessageDTO(User user1, User user2){
-        this.user1 = user1;
-        this.user2 = user2;
+    public MessageDTO(Message message){
+        this.author = new ProfileDTO(message.getAuthor());
+        this.createdAt = message.getCreatedAt();
+        this.content = message.getContent();
     }
 }
