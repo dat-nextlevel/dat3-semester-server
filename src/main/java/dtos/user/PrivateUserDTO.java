@@ -1,15 +1,10 @@
 package dtos.user;
 
-import com.google.gson.Gson;
-import dtos.AddressDTO;
 import dtos.DawaDTO;
 import dtos.HobbyDTO;
 import entities.User;
-import facades.UserFacade;
 import lombok.*;
-import utils.EMF_Creator;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

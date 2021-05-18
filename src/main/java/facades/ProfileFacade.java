@@ -1,6 +1,6 @@
 package facades;
 
-import dtos.ProfileDTO;
+import dtos.user.ProfileDTO;
 import entities.User;
 
 import javax.persistence.EntityManager;

@@ -2,13 +2,13 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dtos.ChatDTO;
-import facades.ChatFacade;
+import dtos.chat.MessageDTO;
 import utils.EMF_Creator;
 
 import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
@@ -29,7 +29,11 @@ public class ChatResource {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
+    public ChatResource(){}
+
+    @GET
     public Response getChats(){
-        List<ChatDTO> chats = null;
+        List<MessageDTO> chats = null;
+        return null;
     }
 }

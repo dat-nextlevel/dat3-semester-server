@@ -1,6 +1,6 @@
 package facades;
 
-import dtos.ChatDTO;
+import dtos.chat.MessageDTO;
 import entities.User;
 
 import javax.persistence.EntityManager;
@@ -34,7 +34,7 @@ public class ChatFacade {
         return emf.createEntityManager();
     }
 
-    public List<ChatDTO> getChats(String username){
+    public List<MessageDTO> getChats(String username){
         EntityManager em = emf.createEntityManager();
 
         try{
@@ -42,7 +42,10 @@ public class ChatFacade {
             q.setParameter("username", username);
             User user = q.getSingleResult();
 
-            List<ChatDTO> chats = null;
+            List<MessageDTO> chats = null;
+        } finally {
+            em.close();
         }
+        return null;
     }
 }
