@@ -1,5 +1,8 @@
 package entities;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +12,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
-
+@Data
+@NoArgsConstructor
 @Entity
 public class Hobby implements Serializable {
 
@@ -23,36 +27,9 @@ public class Hobby implements Serializable {
     @ManyToMany(mappedBy = "hobbies")
     private List<User> users;
 
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public List<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<User> users) {
-        this.users = users;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Hobby(String name, String category) {
         this.name = name;
         this.category = category;
         this.users = new ArrayList<>();
-    }
-
-    public Hobby() {
     }
 }

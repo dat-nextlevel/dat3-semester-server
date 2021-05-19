@@ -4,11 +4,15 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.persistence.*;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-@ToString
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "users")
 public class User implements Serializable {
@@ -40,10 +44,6 @@ public class User implements Serializable {
             inverseJoinColumns = { @JoinColumn(name = "hobby_name") })
     List<Hobby> hobbies;
 
-
-    public User() {
-    }
-
     public User(String username, String password) {
         this.username = username;
         this.password = generateHashedPassword(password);
@@ -54,36 +54,12 @@ public class User implements Serializable {
         return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
     public void setPassword(String password) {
         this.password = generateHashedPassword(password);
     }
 
     public boolean verifyPassword(String password) {
         return BCrypt.checkpw(password, this.password);
-    }
-
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
     }
 
     public void addRole(Role role) {
@@ -98,49 +74,8 @@ public class User implements Serializable {
         return roles.isEmpty() ? null : roles.stream().map(Object::toString).collect(Collectors.toList());
     }
 
-    public String getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(String x) {
-        this.latitude = x;
-    }
-
-    public String getLongitude() {
-        return longitude;
-    }
-
-
-    public void setLongitude(String y) {
-        this.longitude = y;
-    }
-
-    public List<Hobby> getHobbies() {
-        return hobbies;
-    }
-
     public void addHobby(Hobby hobby){
         hobbies.add(hobby);
-    }
-
-    public String getAddressId() {
-        return addressId;
-    }
-
-    public int getRadius() {
-        return radius;
-    }
-
-    public void setRadius(int radius) {
-        this.radius = radius;
-    }
-
-    public void setAddressId(String addressId) {
-        this.addressId = addressId;
-    }
-
-    public void setHobbies(List<Hobby> hobbies) {
-        this.hobbies = hobbies;
     }
 
     public void removeAllHobbies() {
@@ -150,13 +85,5 @@ public class User implements Serializable {
             Hobby hobby = iterator.next();
             iterator.remove();
         }
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
     }
 }
