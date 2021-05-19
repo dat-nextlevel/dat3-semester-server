@@ -2,7 +2,9 @@ package rest;
 
 import com.google.gson.Gson;
 import dtos.HobbyDTO;
+import dtos.chat.MessageDTO;
 import dtos.user.PrivateUserDTO;
+import entities.chat.Message;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.parsing.Parser;
@@ -66,6 +68,7 @@ class ChatResourceTest {
             em.getTransaction().begin();
             //Delete existing users and roles to get a "fresh" database
             em.createQuery("delete from Chat").executeUpdate();
+            em.createQuery("delete from Message").executeUpdate();
             em.createQuery("delete from Hobby").executeUpdate();
             em.createQuery("delete from User").executeUpdate();
             em.createQuery("delete from Role").executeUpdate();
@@ -102,14 +105,51 @@ class ChatResourceTest {
                 .when()
                 .get("/chat").then()
                 .statusCode(200)
-                .body("data", hasSize(0));
+                .body("data", hasSize(1));
+
+        login("admin", "test");
+
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/chat").then()
+                .statusCode(200)
+                .body("data", hasSize(1));
     }
 
     @Test
     void getChat() {
+        login("user", "test");
+
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/chat/admin").then()
+                .statusCode(200)
+                .body("participants", hasSize(2));
     }
 
     @Test
     void addMessage() {
+        login("user", "test");
+        String json = String.format("{content: \"%s\"}", "This is a test message");
+
+        given()
+                .contentType("application/json")
+                .body(json)
+                .header("x-access-token", securityToken)
+                .when()
+                .post("/chat/admin").then()
+                .statusCode(200);
+
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/chat/admin").then()
+                .statusCode(200)
+                .body("messages", hasSize(2));
     }
 }

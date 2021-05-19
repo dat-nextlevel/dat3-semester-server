@@ -33,6 +33,7 @@ public class ApplicationConfig extends Application {
         resources.add(rest.UserResource.class);
         resources.add(rest.ProfileResource.class);
         resources.add(rest.UtilResource.class);
+        resources.add(rest.ChatResource.class);
         resources.add(security.JWTAuthenticationFilter.class);
         resources.add(AuthenticationEndpoint.class);
         resources.add(security.RolesAllowedFilter.class);
