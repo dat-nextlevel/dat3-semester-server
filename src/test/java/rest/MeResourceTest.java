@@ -65,6 +65,7 @@ public class MeResourceTest {
             //Delete existing users and roles to get a "fresh" database
             em.createQuery("delete from Chat").executeUpdate();
             em.createQuery("delete from Message").executeUpdate();
+            em.createQuery("delete from Hobby").executeUpdate();
             em.createQuery("delete from User").executeUpdate();
             em.createQuery("delete from Role").executeUpdate();
             //System.out.println("Saved test data to database");

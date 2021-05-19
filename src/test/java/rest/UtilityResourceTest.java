@@ -64,9 +64,11 @@ public class UtilityResourceTest {
         try {
             em.getTransaction().begin();
             //Delete existing database data.
+            em.createQuery("delete from Chat").executeUpdate();
+            em.createQuery("delete from Message").executeUpdate();
+            em.createQuery("delete from Hobby").executeUpdate();
             em.createQuery("delete from User").executeUpdate();
             em.createQuery("delete from Role").executeUpdate();
-            em.createQuery("delete from Hobby").executeUpdate();
 
             em.getTransaction().commit();
 
