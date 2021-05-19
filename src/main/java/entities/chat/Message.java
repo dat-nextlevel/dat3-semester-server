@@ -22,7 +22,8 @@ public class Message {
     private User author;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private Date createdAt = new Date();
+
     private String content;
 
     public Message(User author, String content){
