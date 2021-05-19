@@ -18,7 +18,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Path("chat")
 @Produces(MediaType.APPLICATION_JSON)
@@ -37,7 +39,8 @@ public class ChatResource {
     @GET
     public Response getChats(){
         List<ChatDTO> chats = CHAT_FACADE.getChats(securityContext.getUserPrincipal().getName());
-        return Response.ok(GSON.toJson(chats)).build();
+        Map<String, List<ChatDTO>> data = Collections.singletonMap("data", chats);
+        return Response.ok(GSON.toJson(data)).build();
     }
 
     @GET

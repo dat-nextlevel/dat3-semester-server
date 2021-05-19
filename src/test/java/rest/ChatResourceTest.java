@@ -1,12 +1,19 @@
 package rest;
 
-import dtos.chat.ChatDTO;
+import com.google.gson.Gson;
+import dtos.HobbyDTO;
+import dtos.user.PrivateUserDTO;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.parsing.Parser;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.junit.jupiter.api.*;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import utils.EMF_Creator;
 import utils.Populate;
 
@@ -14,9 +21,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.util.Arrays;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.Matchers.*;
 
 class ChatResourceTest {
 
@@ -57,6 +65,7 @@ class ChatResourceTest {
         try {
             em.getTransaction().begin();
             //Delete existing users and roles to get a "fresh" database
+            em.createQuery("delete from Chat").executeUpdate();
             em.createQuery("delete from Hobby").executeUpdate();
             em.createQuery("delete from User").executeUpdate();
             em.createQuery("delete from Role").executeUpdate();
@@ -85,7 +94,15 @@ class ChatResourceTest {
 
     @Test
     void getChats() {
+        login("user", "test");
 
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/chat").then()
+                .statusCode(200)
+                .body("data", hasSize(0));
     }
 
     @Test

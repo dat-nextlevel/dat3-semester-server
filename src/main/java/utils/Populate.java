@@ -3,8 +3,10 @@ package utils;
 
 import com.google.common.base.Strings;
 import dtos.HobbyDTO;
+import dtos.chat.ChatDTO;
 import dtos.user.PrivateUserDTO;
 import entities.Hobby;
+import facades.ChatFacade;
 import facades.HobbyFacade;
 import facades.UserFacade;
 
@@ -33,6 +35,8 @@ public class Populate {
             populated.add("hobbies");
         if(populateUsers())
             populated.add("users");
+        if(populateChats())
+            populated.add("chats");
 
         return populated;
     }
@@ -112,6 +116,16 @@ public class Populate {
         );
 
         hobbyFacade.create(hobbies);
+        return true;
+    }
+
+    private boolean populateChats(){
+        ChatFacade chatFacade = ChatFacade.getChatFacade(this.emf);
+
+        if (!chatFacade.getChats("user").isEmpty()) return false;
+
+        chatFacade.addMessage("user", "admin", "This is a test message");
+
         return true;
     }
 
