@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @ToString
 public class PrivateUserDTO {
     private String username;
+    private String displayName;
     private List<String> roles;
     private List<HobbyDTO> hobbies;
     private int radius;
@@ -24,6 +25,7 @@ public class PrivateUserDTO {
 
     public PrivateUserDTO(User user) {
         this.username = user.getUsername();
+        this.displayName = user.getDisplayName();
         this.roles = user.getRoles().stream().map(Object::toString).collect(Collectors.toList());
         this.hobbies = user.getHobbies().stream().map(HobbyDTO::new).collect(Collectors.toList());
         this.radius = user.getRadius();
@@ -40,12 +42,12 @@ public class PrivateUserDTO {
         // Yes...
         this.address.setId(dawa.getId());
         this.address.setStreet(dawa.getVejnavn());
-        this.address.setStreet_number(dawa.getHusnr());
+        this.address.setStreetNumber(dawa.getHusnr());
         this.address.setFloor(dawa.getEtage());
         this.address.setZip(dawa.getPostnr());
         this.address.setCity(dawa.getPostnrnavn());
         this.address.setLongitude(String.valueOf(dawa.getX()));
         this.address.setLatitude(String.valueOf(dawa.getY()));
-        this.address.setFull_name(dawa.getBetegnelse());
+        this.address.setDesignation(dawa.getBetegnelse());
     }
 }

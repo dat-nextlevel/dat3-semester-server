@@ -25,6 +25,7 @@ public class User implements Serializable {
     private String latitude;
     private String longitude;
     private String addressId;
+    private String displayName;
     private int radius;
 
     @ManyToMany(cascade = CascadeType.PERSIST)
@@ -149,5 +150,13 @@ public class User implements Serializable {
             Hobby hobby = iterator.next();
             iterator.remove();
         }
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 }

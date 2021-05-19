@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 public class AddressDTO {
     private String id;
     private String street;
-    private String street_number;
+    private String streetNumber;
     private String floor;
-    private String floor_door;
+    private String floorDoor;
     private String zip;
     private String city;
     private String latitude;
     private String longitude;
-    private String full_name;
+    private String designation;
 }
