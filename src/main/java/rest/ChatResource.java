@@ -60,4 +60,5 @@ public class ChatResource {
         MessageDTO mDTO = CHAT_FACADE.addMessage(securityContext.getUserPrincipal().getName(), username, content);
         return Response.ok(GSON.toJson(mDTO)).build();
     }
+
 }
