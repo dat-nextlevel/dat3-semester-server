@@ -193,6 +193,9 @@ public class UserFacade {
             if (updatedUser.getRadius() != 0)
                 user.setRadius(updatedUser.getRadius());
 
+            if(!Strings.isNullOrEmpty(updatedUser.getDisplayName()))
+                user.setDisplayName(updatedUser.getDisplayName());
+
             em.getTransaction().begin();
             em.merge(user);
             em.getTransaction().commit();

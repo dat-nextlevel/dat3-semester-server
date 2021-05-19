@@ -106,7 +106,8 @@ public class MeResourceTest {
                 .when()
                 .get("/me").then() //Call Admin endpoint as user
                 .statusCode(200)
-                .body("username", equalTo("user"));
+                .body("username", equalTo("user"))
+                .body("displayName", equalTo("Just a user"));
     }
 
     @Test

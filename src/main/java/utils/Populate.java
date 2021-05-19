@@ -77,6 +77,7 @@ public class Populate {
                         new HobbyDTO("Risk", ""),
                         new HobbyDTO("Streaming", "")
                 ))
+                .displayName("Just a user")
                 .radius(5)
                 .build();
 
