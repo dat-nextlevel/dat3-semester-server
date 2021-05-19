@@ -42,9 +42,11 @@ class UserFacadeTest {
         try {
             em.getTransaction().begin();
             //Delete existing database data.
-            for (String s : Arrays.asList("delete from User", "delete from Role", "delete from Hobby")) {
-                em.createQuery(s).executeUpdate();
-            }
+            em.createQuery("delete from Chat").executeUpdate();
+            em.createQuery("delete from Message").executeUpdate();
+            em.createQuery("delete from Hobby").executeUpdate();
+            em.createQuery("delete from User").executeUpdate();
+            em.createQuery("delete from Role").executeUpdate();
             em.getTransaction().commit();
 
             List<HobbyDTO> hobbies = Arrays.asList(

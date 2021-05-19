@@ -1,6 +1,7 @@
 package facades;
 
 import dtos.user.MatchDTO;
+import entities.Hobby;
 import entities.User;
 import utils.CoordinatesCalculator;
 
@@ -18,6 +19,7 @@ public class MatchFacade {
 
     private static EntityManagerFactory emf;
     private static MatchFacade instance;
+    private static UserFacade USER_FACADE;
 
     private MatchFacade() {
 
@@ -32,6 +34,7 @@ public class MatchFacade {
     public static MatchFacade getMatchFacade(EntityManagerFactory _emf) {
         if (instance == null) {
             emf = _emf;
+            USER_FACADE = UserFacade.getUserFacade(emf);
             instance = new MatchFacade();
         }
         return instance;
@@ -43,6 +46,13 @@ public class MatchFacade {
 
     public List<MatchDTO> getMatches(String username) {
 
+        User user = USER_FACADE.getUser(username);
+        if(user == null) throw new WebApplicationException("No user found with username" + username, 404);
+
+        return getMatches(username, user.getRadius(), user.getHobbies().stream().map(Hobby::getName).collect(Collectors.toList()));
+    }
+
+    public List<MatchDTO> getMatches(String username, int radius, List<String> hobbies) {
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<User> q = em.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class);
@@ -54,15 +64,15 @@ public class MatchFacade {
             List<User> users = q2.getResultList();
             List<User> matchedUsers = new ArrayList<>(users);
 
-            for (User u : users) {
-                if (u.getHobbies() == null || u.getHobbies().isEmpty() || u.getLatitude() == null || u.getLongitude() == null) {
-                    matchedUsers.remove(u);
+            for (User matchedUser : users) {
+                if (matchedUser.getHobbies() == null || matchedUser.getHobbies().isEmpty() || matchedUser.getLatitude() == null || matchedUser.getLongitude() == null) {
+                    matchedUsers.remove(matchedUser);
                 }
-                else if (Collections.disjoint(user.getHobbies(), u.getHobbies())) {
-                    matchedUsers.remove(u);
+                else if (Collections.disjoint(hobbies, matchedUser.getHobbies().stream().map(Hobby::getName).collect(Collectors.toList()))) {
+                    matchedUsers.remove(matchedUser);
                 }
-                else if (!CoordinatesCalculator.calcDistanceWithRadius(user, u, user.getRadius())) {
-                    matchedUsers.remove(u);
+                else if (!CoordinatesCalculator.calcDistanceWithRadius(user, matchedUser, radius)) {
+                    matchedUsers.remove(matchedUser);
                 }
             }
 
@@ -70,6 +80,9 @@ public class MatchFacade {
 
         } catch (NoResultException e) {
             throw new WebApplicationException("No user found with username" + username, 404);
+        }
+        finally {
+            em.close();
         }
     }
 }

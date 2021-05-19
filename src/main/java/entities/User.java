@@ -32,17 +32,17 @@ public class User implements Serializable {
     private String displayName;
     private int radius;
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "user_roles",
             joinColumns = { @JoinColumn(name = "fk_user_id") },
             inverseJoinColumns = { @JoinColumn(name = "fk_role") })
     private Set<Role> roles = new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "user_hobbies",
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "hobby_name") })
-    List<Hobby> hobbies;
+    List<Hobby> hobbies = new ArrayList<>();
 
     public User(String username, String password) {
         this.username = username;

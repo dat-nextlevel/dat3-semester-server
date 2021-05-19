@@ -23,12 +23,20 @@ public class MatchResource {
        
     private static final MatchFacade MATCH_FACADE = MatchFacade.getMatchFacade(EMF);
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-            
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("user")
-    public Response getMatches(){
-        List<MatchDTO> matches = MATCH_FACADE.getMatches(securityContext.getUserPrincipal().getName());
+    public Response getMatches(@QueryParam("radius") String radius, @QueryParam("hobbies") List<String> hobbies){
+        List<MatchDTO> matches;
+        // Global search (modified from user)
+        if(radius != null && hobbies != null) {
+            matches = MATCH_FACADE.getMatches(securityContext.getUserPrincipal().getName(), Integer.parseInt(radius), hobbies);
+        }
+        // Search by user defaults.
+        else {
+            matches = MATCH_FACADE.getMatches(securityContext.getUserPrincipal().getName());
+        }
         return Response.ok(GSON.toJson(matches)).build();
     }
 }

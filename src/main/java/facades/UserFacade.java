@@ -175,7 +175,7 @@ public class UserFacade {
 
             // Only replace posted fields (check if null first).
 
-            if(updatedUser.getHobbies() != null) {
+            if(updatedUser.getHobbies() != null && !updatedUser.getHobbies().isEmpty()) {
                 user.removeAllHobbies();
                 List<Hobby> hobbies = updatedUser.getHobbies().stream().map((hobby) -> em.find(Hobby.class, hobby.getName())).collect(Collectors.toList());
                 user.setHobbies(hobbies);
