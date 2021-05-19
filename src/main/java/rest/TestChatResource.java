@@ -6,8 +6,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dtos.chat.ChatDTO;
 import dtos.chat.MessageDTO;
-import entities.chat.Chat;
-import errorhandling.API_Exception;
 import facades.ChatFacade;
 import utils.EMF_Creator;
 
@@ -17,53 +15,45 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-@Path("chat")
+@Path("chat-test")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@RolesAllowed("user")
-public class ChatResource {
-    @Context
-    SecurityContext securityContext;
+public class TestChatResource {
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
 
     private static final ChatFacade CHAT_FACADE = ChatFacade.getChatFacade(EMF);
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    public ChatResource(){}
-
     @GET
-    public Response getChats(){
-        List<ChatDTO> chats = CHAT_FACADE.getChats(securityContext.getUserPrincipal().getName());
+    @Path("/{username}")
+    public Response getChats(@PathParam("username") String username) {
+        List<ChatDTO> chats = CHAT_FACADE.getChats(username);
         Map<String, List<ChatDTO>> data = Collections.singletonMap("data", chats);
         return Response.ok(GSON.toJson(data)).build();
     }
 
     @GET
-    @Path("/{username}")
-    public Response getChat(@PathParam("username") String username){
-        ChatDTO chat = CHAT_FACADE.getChat(securityContext.getUserPrincipal().getName(), username);
+    @Path("/{username1}/{username2}")
+    public Response getChat(@PathParam("username1") String username1, @PathParam("username2") String username2) {
+        ChatDTO chat = CHAT_FACADE.getChat(username1, username2);
         return Response.ok(GSON.toJson(chat)).build();
     }
 
     @POST
-    @Path("/{username}")
-    public Response addMessage(@PathParam("username") String username, String jsonBody){
+    @Path("/{username1}/{username2}")
+    public Response addMessage(@PathParam("username1") String username1, @PathParam("username2") String username2,String jsonBody) {
         String content;
         try {
             JsonObject json = JsonParser.parseString(jsonBody).getAsJsonObject();
             content = json.get("content").getAsString();
-        } catch(Exception e) {
-            throw new WebApplicationException("Malformed JSON Suplied",400);
+        } catch (Exception e) {
+            throw new WebApplicationException("Malformed JSON Suplied", 400);
         }
-        MessageDTO mDTO = CHAT_FACADE.addMessage(securityContext.getUserPrincipal().getName(), username, content);
+        MessageDTO mDTO = CHAT_FACADE.addMessage(username1, username2, content);
         return Response.ok(GSON.toJson(mDTO)).build();
     }
-
-
-
 }

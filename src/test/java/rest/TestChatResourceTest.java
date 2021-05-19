@@ -1,18 +1,14 @@
 package rest;
 
-import com.google.gson.Gson;
-import dtos.HobbyDTO;
-import dtos.chat.MessageDTO;
-import dtos.user.PrivateUserDTO;
-import entities.chat.Message;
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.parsing.Parser;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import utils.EMF_Creator;
 import utils.Populate;
 
@@ -20,13 +16,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
-import java.util.Arrays;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasSize;
 
 
-class ChatResourceTest {
+class TestChatResourceTest {
 
     private static final int SERVER_PORT = 7777;
     private static final String SERVER_URL = "http://localhost/api";
@@ -79,74 +74,49 @@ class ChatResourceTest {
         }
     }
 
-    private static String securityToken;
-
-    private static void login(String username, String password){
-        String json = String.format("{username: \"%s\", password: \"%s\"}", username, password);
-        securityToken = given()
-                .contentType("application/json")
-                .body(json)
-                //.when().post("/api/login")
-                .when().post("authentication/login")
-                .then()
-                .extract().path("token");
-        //System.out.println("Token ---> " + securityToken);
-    }
-
     @Test
     void getChats() {
-        login("user", "test");
 
         given()
                 .contentType("application/json")
-                .header("x-access-token", securityToken)
                 .when()
-                .get("/chat").then()
+                .get("/chat-test/user").then()
                 .statusCode(200)
                 .body("data", hasSize(1));
 
-        login("admin", "test");
-
         given()
                 .contentType("application/json")
-                .header("x-access-token", securityToken)
                 .when()
-                .get("/chat").then()
+                .get("/chat-test/admin").then()
                 .statusCode(200)
                 .body("data", hasSize(1));
     }
 
     @Test
     void getChat() {
-        login("user", "test");
-
         given()
                 .contentType("application/json")
-                .header("x-access-token", securityToken)
                 .when()
-                .get("/chat/admin").then()
+                .get("/chat-test/user/admin").then()
                 .statusCode(200)
                 .body("participants", hasSize(2));
     }
 
     @Test
     void addMessage() {
-        login("user", "test");
         String json = String.format("{content: \"%s\"}", "This is a test message");
 
         given()
                 .contentType("application/json")
                 .body(json)
-                .header("x-access-token", securityToken)
                 .when()
-                .post("/chat/admin").then()
+                .post("/chat-test/user/admin").then()
                 .statusCode(200);
 
         given()
                 .contentType("application/json")
-                .header("x-access-token", securityToken)
                 .when()
-                .get("/chat/admin").then()
+                .get("/chat-test/admin/user").then()
                 .statusCode(200)
                 .body("messages", hasSize(2));
     }
