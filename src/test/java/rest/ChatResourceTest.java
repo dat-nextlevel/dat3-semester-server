@@ -1,5 +1,6 @@
 package rest;
 
+import dtos.chat.ChatDTO;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import org.glassfish.grizzly.http.server.HttpServer;
@@ -32,7 +33,7 @@ class ChatResourceTest {
     }
 
     @BeforeAll
-    void setUp() {
+    public static void setUp() {
         EMF_Creator.startREST_TestWithDB();
         emf = EMF_Creator.createEntityManagerFactoryForTest();
 
@@ -84,6 +85,7 @@ class ChatResourceTest {
 
     @Test
     void getChats() {
+
     }
 
     @Test
