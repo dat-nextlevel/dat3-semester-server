@@ -11,12 +11,12 @@ import java.util.Date;
 @AllArgsConstructor
 public class MessageDTO {
     private ProfileDTO author;
-    private Date createdAt;
+    private long createdAt;
     private String content;
 
     public MessageDTO(Message message){
         this.author = new ProfileDTO(message.getAuthor());
-        this.createdAt = message.getCreatedAt();
+        this.createdAt = message.getCreatedAt().getTime();
         this.content = message.getContent();
     }
 }
