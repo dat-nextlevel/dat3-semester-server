@@ -125,7 +125,16 @@ public class Populate {
     private boolean populateChats(){
         ChatFacade chatFacade = ChatFacade.getChatFacade(this.emf);
 
-        if (!chatFacade.getChats("user").isEmpty()) return false;
+        // drop-and-create not working for Chats, for some reason... force it.
+        EntityManager em = this.emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.createQuery("delete from Chat").executeUpdate();
+            em.createQuery("delete from Message").executeUpdate();
+            em.getTransaction().commit();
+        } finally {
+             em.close();
+        }
 
         chatFacade.addMessage("user", "admin", "This is a test message");
         chatFacade.addMessage("admin", "user", "Is this shit even working!?");
