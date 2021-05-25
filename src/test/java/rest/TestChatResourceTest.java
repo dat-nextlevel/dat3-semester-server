@@ -118,6 +118,6 @@ class TestChatResourceTest {
                 .when()
                 .get("/chat-test/admin/user").then()
                 .statusCode(200)
-                .body("messages", hasSize(2));
+                .body("messages", hasSize(4));
     }
 }

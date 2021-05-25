@@ -26,7 +26,7 @@ import java.util.Map;
 @Path("chat")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-//@RolesAllowed("user")
+@RolesAllowed("user")
 public class ChatResource {
     @Context
     SecurityContext securityContext;
