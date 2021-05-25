@@ -24,7 +24,7 @@ public class UserResource {
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
     private static final UserFacade USER_FACADE = UserFacade.getUserFacade(EMF);
 
-    private static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public UserResource() {}
 
@@ -37,5 +37,10 @@ public class UserResource {
 
         updatedUser = USER_FACADE.updateUser(updatedUser);
         return Response.ok(GSON.toJson(updatedUser)).build();
+    }
+
+    @GET
+    public Response getUsers() {
+        return Response.ok(GSON.toJson(USER_FACADE.getUsers())).build();
     }
 }

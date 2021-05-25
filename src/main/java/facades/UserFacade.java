@@ -128,11 +128,11 @@ public class UserFacade {
         }
     }
 
-    public List<UserDTO> getUsers() {
+    public List<PrivateUserDTO> getUsers() {
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<User> q = em.createQuery("SELECT u FROM User u", User.class);
-            return q.getResultList().stream().map(UserDTO::new).collect(Collectors.toList());
+            return q.getResultList().stream().map(PrivateUserDTO::new).collect(Collectors.toList());
         } finally {
             em.close();
         }

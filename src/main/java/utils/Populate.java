@@ -12,6 +12,8 @@ import facades.UserFacade;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -78,7 +80,7 @@ public class Populate {
                         new HobbyDTO("Streaming", "")
                 ))
                 .displayName("Just a user")
-                .radius(5)
+                .radius(55)
                 .build();
 
         PrivateUserDTO adminPrivate = PrivateUserDTO.builder()
@@ -89,9 +91,9 @@ public class Populate {
                         new HobbyDTO("Risk", ""),
                         new HobbyDTO("Coding", "")
                 ))
-                .radius(5)
+                .displayName("Im Da Boss")
+                .radius(55)
                 .build();
-
         userFacade.updateUser(userPrivate);
         userFacade.updateUser(adminPrivate);
 
@@ -126,6 +128,8 @@ public class Populate {
         if (!chatFacade.getChats("user").isEmpty()) return false;
 
         chatFacade.addMessage("user", "admin", "This is a test message");
+        chatFacade.addMessage("admin", "user", "Is this shit even working!?");
+        chatFacade.addMessage("admin", "user", "It looks like its working! Finally!");
 
         return true;
     }

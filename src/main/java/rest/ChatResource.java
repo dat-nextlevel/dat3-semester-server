@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 import dtos.chat.ChatDTO;
 import dtos.chat.MessageDTO;
 import entities.chat.Chat;
+import entities.chat.Message;
 import errorhandling.API_Exception;
 import facades.ChatFacade;
 import utils.EMF_Creator;
@@ -25,7 +26,7 @@ import java.util.Map;
 @Path("chat")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@RolesAllowed("user")
+//@RolesAllowed("user")
 public class ChatResource {
     @Context
     SecurityContext securityContext;
@@ -63,7 +64,17 @@ public class ChatResource {
         MessageDTO mDTO = CHAT_FACADE.addMessage(securityContext.getUserPrincipal().getName(), username, content);
         return Response.ok(GSON.toJson(mDTO)).build();
     }
-
-
-
+    
+    @GET
+    @Path("/count")
+    public Response getMessageCount() {
+        return Response.ok(CHAT_FACADE.getTotalMessageCount()).build();
+    }
+    
+    @GET
+    @Path("/count/{username}")
+    public Response getUserMessageCount(@PathParam("username") String username) {
+        int userMessageCount = CHAT_FACADE.getMessageCountForUser(username);
+        return Response.ok(GSON.toJson(userMessageCount)).build();
+    }
 }

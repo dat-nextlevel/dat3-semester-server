@@ -13,6 +13,7 @@ import javax.persistence.TypedQuery;
 import javax.ws.rs.WebApplicationException;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.persistence.Query;
 
 public class ChatFacade {
 
@@ -39,6 +40,32 @@ public class ChatFacade {
 
     public EntityManager getEntityManager() {
         return emf.createEntityManager();
+    }
+    
+    public int getMessageCountForUser(String username) {
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            TypedQuery<User> q1 = em.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class);
+            q1.setParameter("username", username);
+            long userID = (long)q1.getSingleResult().getId();
+            TypedQuery<Message> q2 = em.createQuery("SELECT m FROM Message m WHERE m.author.id = :userID", Message.class);
+            q2.setParameter("userID", userID);
+            return q2.getResultList().size();
+        }
+        finally {
+            em.close();
+        }
+    }
+    
+    public Long getTotalMessageCount() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Message> q = em.createQuery("SELECT m FROM Message m", Message.class);
+            return (long)q.getResultList().stream().map(MessageDTO::new).collect(Collectors.toList()).size();
+        } finally {
+            em.close();
+        }
     }
 
     public List<ChatDTO> getChats(String username) {

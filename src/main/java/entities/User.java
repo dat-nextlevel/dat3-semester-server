@@ -1,6 +1,8 @@
 package entities;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.persistence.*;
@@ -9,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.mindrot.jbcrypt.BCrypt;
 
 @Data
@@ -31,6 +34,8 @@ public class User implements Serializable {
     private String addressId;
     private String displayName;
     private int radius;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date created_At = new Date();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "user_roles",
@@ -82,7 +87,7 @@ public class User implements Serializable {
         //this.hobbies.forEach(this::removeHobby);
         // Avoiding concurrent exception...
         for (Iterator<Hobby> iterator = this.getHobbies().iterator(); iterator.hasNext();) {
-            Hobby hobby = iterator.next();
+            iterator.next();
             iterator.remove();
         }
     }

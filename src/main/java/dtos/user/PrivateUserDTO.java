@@ -5,6 +5,9 @@ import dtos.HobbyDTO;
 import entities.User;
 import lombok.*;
 
+import javax.persistence.Column;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +24,7 @@ public class PrivateUserDTO {
     private String addressId;
     private String longitude;
     private String latitude;
+    private Date createdAt;
     private AddressDTO address = new AddressDTO();
 
     public PrivateUserDTO(User user) {
@@ -32,6 +36,7 @@ public class PrivateUserDTO {
         this.addressId = user.getAddressId();
         this.latitude = user.getLatitude();
         this.longitude = user.getLongitude();
+        this.createdAt = user.getCreated_At();
     }
 
     public PrivateUserDTO(User user, DawaDTO dawa) {
